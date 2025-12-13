@@ -7,17 +7,47 @@ let lastChanged = null; // remembers which field was edited last (for conflict h
 
 // Optional locales (separate files in assets/i18n/)
 const OPTIONAL_LOCALES = [
-  "de","fr","it","es","nl","pt","sv","da","no","fi","is",
-  "cs","sk","pl","hu","ro","bg","hr","sl","lt","lv","et",
-  "el","ga","lb","rm","ca","tr","cy","gd","mt"
+  "de",
+  "fr",
+  "it",
+  "es",
+  "nl",
+  "pt",
+  "sv",
+  "da",
+  "no",
+  "fi",
+  "is",
+  "cs",
+  "sk",
+  "pl",
+  "hu",
+  "ro",
+  "bg",
+  "hr",
+  "sl",
+  "lt",
+  "lv",
+  "et",
+  "el",
+  "ga",
+  "lb",
+  "rm",
+  "ca",
+  "tr",
+  "cy",
+  "gd",
+  "mt",
 ];
 
 // Derive human readable language names without hardcoding a fragile table
-function languageLabel(code){
+function languageLabel(code) {
   try {
-    const dn = new Intl.DisplayNames(['en'], { type: 'language' });
+    const dn = new Intl.DisplayNames(["en"], { type: "language" });
     const name = dn.of(code);
-    return name ? name.charAt(0).toUpperCase() + name.slice(1) : code.toUpperCase();
+    return name
+      ? name.charAt(0).toUpperCase() + name.slice(1)
+      : code.toUpperCase();
   } catch {
     return code.toUpperCase();
   }
@@ -55,92 +85,164 @@ const LANGUAGE_NAMES = {
   tr: "TÃ¼rkÃ§e",
   cy: "Cymraeg",
   gd: "GÃ idhlig",
-  mt: "Malti"
+  mt: "Malti",
 };
 
 // ---------- i18n helpers ----------
-function ensureI18N(){
+function ensureI18N() {
   if (!window.I18N) window.I18N = {};
   if (!window.I18N.en) {
     // Minimal inline EN fallback if i18n-core.js failed
     window.I18N.en = {
-      title:"EPC QR Code Offline Generator", paymentData:"Payment details", advanced:"Advanced (optional)",
-      l_name:"Recipient (name)", l_iban:"IBAN", l_amount:"Amount in EUR", l_unstruct:"Payment reference",
-      l_struct:"Structured reference", h_struct:"Use only if no payment reference (free text) is provided.",
-      l_purpose:"Purpose code (optional)", h_purpose:"Standardized four-letter codes (e.g., GDDS, SALA, CHAR).",
-      l_bic:"BIC (only in special cases)", l_b2o:"Note to originator", l_version:"Version", l_charset:"Character set",
-      h_limit:"Maximum payload 331 bytes. No extra line break after the last field.",
-      btn_gen:"Generate QR code", btn_ex:"Example data",
-      save_as:"Save as", save_png:"PNG", save_svg:"SVG", save_jpg:"JPG",
-      theme_dark:"Dark", theme_light:"Light",
-      hint_iban_ok:"IBAN looks valid.", hint_iban_bad:"IBAN is invalid.", hint_amount_fmt:"Will be formatted to two decimals on generate.",
-      live_checks:"Live checks:", live_ok:"OK", live_conflict:"Conflict: use either Structured reference OR Payment reference.",
-      tooltip_struct:"Use RF creditor reference (ISO 11649). If you set this, leave Payment reference empty.",
-      tooltip_purpose:"Standard code like GDDS (goods), SALA (salary), CHAR (charity). Optional.",
-      totalBytes:"Total bytes:", qrInfo:"QR info:", details:"Show details (EPC payload)", lf:"Line breaks are shown as âŽ.",
-      placeholders:{ name:"e.g., Example GmbH", iban:"DE89 3704 0044 0532 0130 00", amount:"12.34", unstruct:"Invoice 4711, Customer 123", struct:"e.g., RF18â€¦", purpose:"e.g., GDDS", bic:"usually empty in EU", b2o:"optional" },
-      exdata:{ name:"Example GmbH", iban:"DE71 1102 2033 0123 4567 89", amount:"12.30", unstruct:"Invoice 4711", struct:"", purpose:"", bic:"", b2o:"" },
-      status_ok:"QR code created. Scan with your banking app or save.", status_prefill:"Example data filled. Click â€œGenerate QR codeâ€.", status_noqr:"No QR code yet.",
-      err_name:"Recipient is required.", err_iban:"IBAN is invalid.", err_purpose:"Purpose code must be 1â€“4 alphanumeric characters.", err_bic:"Invalid BIC format.", err_amount_min:"Invalid amount: at least 0.01 EUR.",
-      err_len:(b)=>`Text too long: payload exceeds 331 bytes (${b}). Please shorten.`, err_qrlib:"QR library not loaded. Ensure assets/qrcode.min.js exists and is loaded before app.js.",
-      footer_offline:"This page works fully offline. Just open index.html.", footer_support:"Support:", footer_buy:"â˜• Buy me a coffee", footer_kofi:"â¤ï¸ Ko-fi", footer_gh:"ðŸŒ GitHub"
+      title: "EPC QR Code Offline Generator",
+      paymentData: "Payment details",
+      advanced: "Advanced (optional)",
+      l_name: "Recipient (name)",
+      l_iban: "IBAN",
+      l_amount: "Amount in EUR",
+      l_unstruct: "Payment reference",
+      l_struct: "Structured reference",
+      h_struct: "Use only if no payment reference (free text) is provided.",
+      l_purpose: "Purpose code (optional)",
+      h_purpose: "Standardized four-letter codes (e.g., GDDS, SALA, CHAR).",
+      l_bic: "BIC (only in special cases)",
+      l_b2o: "Note to originator",
+      l_version: "Version",
+      l_charset: "Character set",
+      h_limit:
+        "Maximum payload 331 bytes. No extra line break after the last field.",
+      btn_gen: "Generate QR code",
+      btn_ex: "Example data",
+      save_as: "Save as",
+      save_png: "PNG",
+      save_svg: "SVG",
+      save_jpg: "JPG",
+      theme_dark: "Dark",
+      theme_light: "Light",
+      hint_iban_ok: "IBAN looks valid.",
+      hint_iban_bad: "IBAN is invalid.",
+      hint_amount_fmt: "Will be formatted to two decimals on generate.",
+      live_checks: "Live checks:",
+      live_ok: "OK",
+      live_conflict:
+        "Conflict: use either Structured reference OR Payment reference.",
+      tooltip_struct:
+        "Use RF creditor reference (ISO 11649). If you set this, leave Payment reference empty.",
+      tooltip_purpose:
+        "Standard code like GDDS (goods), SALA (salary), CHAR (charity). Optional.",
+      totalBytes: "Total bytes:",
+      qrInfo: "QR info:",
+      details: "Show details (EPC payload)",
+      lf: "Line breaks are shown as âŽ.",
+      placeholders: {
+        name: "e.g., Example GmbH",
+        iban: "DE89 3704 0044 0532 0130 00",
+        amount: "12.34",
+        unstruct: "Invoice 4711, Customer 123",
+        struct: "e.g., RF18â€¦",
+        purpose: "e.g., GDDS",
+        bic: "usually empty in EU",
+        b2o: "optional",
+      },
+      exdata: {
+        name: "Example GmbH",
+        iban: "DE71 1102 2033 0123 4567 89",
+        amount: "12.30",
+        unstruct: "Invoice 4711",
+        struct: "",
+        purpose: "",
+        bic: "",
+        b2o: "",
+      },
+      status_ok: "QR code created. Scan with your banking app or save.",
+      status_prefill: "Example data filled. Click â€œGenerate QR codeâ€.",
+      status_noqr: "No QR code yet.",
+      err_name: "Recipient is required.",
+      err_iban: "IBAN is invalid.",
+      err_purpose: "Purpose code must be 1â€“4 alphanumeric characters.",
+      err_bic: "Invalid BIC format.",
+      err_amount_min: "Invalid amount: at least 0.01 EUR.",
+      err_len: (b) =>
+        `Text too long: payload exceeds 331 bytes (${b}). Please shorten.`,
+      err_qrlib:
+        "QR library not loaded. Ensure assets/qrcode.js is loaded before app.js.",
+      footer_offline: "This page works fully offline. Just open index.html.",
+      footer_support: "Support:",
+      footer_buy: "â˜• Buy me a coffee",
+      footer_kofi: "â¤ï¸ Ko-fi",
+      footer_gh: "ðŸŒ GitHub",
     };
   }
 }
-function t(){ ensureI18N(); return window.I18N[LANG] || window.I18N.en; }
+function t() {
+  ensureI18N();
+  return window.I18N[LANG] || window.I18N.en;
+}
 
-function loadLocale(lang){
+function loadLocale(lang) {
   ensureI18N();
   if (window.I18N[lang]) return Promise.resolve(true);
   if (!OPTIONAL_LOCALES.includes(lang)) return Promise.resolve(false);
-  return new Promise((resolve)=>{
-    const s = document.createElement('script');
+  return new Promise((resolve) => {
+    const s = document.createElement("script");
     s.src = `./assets/i18n/${lang}.js`;
     s.async = true;
-    s.onload = ()=> { try{ stripLocaleTitles(); }catch{} resolve(!!window.I18N[lang]); };
-    s.onerror = ()=> resolve(false);
+    s.onload = () => {
+      try {
+        stripLocaleTitles();
+      } catch {}
+      resolve(!!window.I18N[lang]);
+    };
+    s.onerror = () => resolve(false);
     document.head.appendChild(s);
   });
 }
-function detectPreferredLang(){
-  const stored = localStorage.getItem('lang');
+function detectPreferredLang() {
+  const stored = localStorage.getItem("lang");
   if (stored) return stored;
-  const list = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || "en"])
-               .map(x => String(x||"").toLowerCase());
+  const list = (
+    navigator.languages && navigator.languages.length
+      ? navigator.languages
+      : [navigator.language || "en"]
+  ).map((x) => String(x || "").toLowerCase());
   for (const tag of list) {
-    const base = tag.split('-')[0];
-    if ((window.I18N && window.I18N[base]) || OPTIONAL_LOCALES.includes(base)) return base;
+    const base = tag.split("-")[0];
+    if ((window.I18N && window.I18N[base]) || OPTIONAL_LOCALES.includes(base))
+      return base;
   }
   return "en";
 }
-function populateLangSelect(current){
-  const select = document.getElementById('lang');
+function populateLangSelect(current) {
+  const select = document.getElementById("lang");
   if (!select) return;
   const allCodes = ["en", ...OPTIONAL_LOCALES];
   select.innerHTML = "";
   for (const code of allCodes) {
-    const opt = document.createElement('option');
+    const opt = document.createElement("option");
     opt.value = code;
     opt.textContent = languageLabel(code);
     if (code === current) opt.selected = true;
     select.appendChild(opt);
   }
   if (!select._bound) {
-    select.addEventListener('change', async (e)=>{
+    select.addEventListener("change", async (e) => {
       await maybeLoadAndApply(e.target.value);
     });
     select._bound = true;
   }
 }
-function applyLang(lang){
-  try{ stripLocaleTitles(); }catch{}
+function applyLang(lang) {
+  try {
+    stripLocaleTitles();
+  } catch {}
   LANG = lang;
   const dict = t();
   document.documentElement.lang = lang;
 
   // Section headings
   // Keep product title constant across languages
-  document.getElementById("t_title").textContent = (window.I18N?.en?.title) || "EPC QR Code Offline Generator";
+  document.getElementById("t_title").textContent =
+    window.I18N?.en?.title || "EPC QR Code Offline Generator";
   document.getElementById("t_paymentData").textContent = dict.paymentData;
   document.querySelector("summary#t_advanced").textContent = dict.advanced;
 
@@ -168,11 +270,14 @@ function applyLang(lang){
   document.getElementById("saveJPG").textContent = dict.save_jpg;
 
   // Meta labels
-  document.getElementById("t_totalBytes").innerHTML = "<strong>"+dict.totalBytes+"</strong>";
-  document.getElementById("t_qrInfo").innerHTML = "<strong>"+dict.qrInfo+"</strong>";
+  document.getElementById("t_totalBytes").innerHTML =
+    "<strong>" + dict.totalBytes + "</strong>";
+  document.getElementById("t_qrInfo").innerHTML =
+    "<strong>" + dict.qrInfo + "</strong>";
   document.getElementById("t_details").textContent = dict.details;
   document.getElementById("t_lf").textContent = dict.lf;
-  document.getElementById("t_liveValidity").innerHTML = "<strong>"+dict.live_checks+"</strong>";
+  document.getElementById("t_liveValidity").innerHTML =
+    "<strong>" + dict.live_checks + "</strong>";
 
   // Placeholders
   const p = dict.placeholders;
@@ -186,11 +291,14 @@ function applyLang(lang){
   document.getElementById("b2o").placeholder = p.b2o;
 
   // Footer
-  document.getElementById("f_offline").innerHTML = dict.footer_offline.replace("index.html","<em>index.html</em>");
+  document.getElementById("f_offline").innerHTML = dict.footer_offline.replace(
+    "index.html",
+    "<em>index.html</em>"
+  );
   document.getElementById("f_support").textContent = dict.footer_support;
   document.getElementById("f_buy").textContent = dict.footer_buy;
   document.getElementById("f_kofi").textContent = dict.footer_kofi;
-  document.getElementById("f_gh").textContent  = dict.footer_gh;
+  document.getElementById("f_gh").textContent = dict.footer_gh;
   fixFooterSeparators();
 
   // Tooltips
@@ -205,103 +313,128 @@ function applyLang(lang){
 
   // Language selector + remember
   populateLangSelect(lang);
-  localStorage.setItem('lang', lang);
+  localStorage.setItem("lang", lang);
 
   // Reformat amount according to new locale rules (space thousands + localized decimal)
-  const amountEl = document.getElementById('amount');
+  const amountEl = document.getElementById("amount");
   if (amountEl && amountEl.value) {
     const n = parseAmountToNumber(amountEl.value);
     if (isFinite(n)) amountEl.value = formatAmountLocalized(n, lang);
     else amountEl.value = sanitizeAmountValue(amountEl.value);
   }
 }
-async function maybeLoadAndApply(lang){
+async function maybeLoadAndApply(lang) {
   if (!window.I18N?.[lang]) await loadLocale(lang);
   applyLang(window.I18N?.[lang] ? lang : "en");
-  clearQR();       // do not show "no QR" message here
-  updateLiveUI();  // refresh live checks
+  clearQR(); // do not show "no QR" message here
+  updateLiveUI(); // refresh live checks
 }
 
 // ---------- Theme ----------
-function updateThemeButton(){
-  const btn = document.getElementById('themeToggle');
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  btn.innerHTML = (isDark ? 'â˜€ï¸ ' + t().theme_light : 'ðŸŒ™ ' + t().theme_dark);
+function updateThemeButton() {
+  const btn = document.getElementById("themeToggle");
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  btn.innerHTML = isDark
+    ? "â˜€ï¸ " + t().theme_light
+    : "ðŸŒ™ " + t().theme_dark;
 }
-function setTheme(mode){
-  document.documentElement.setAttribute('data-theme', mode);
-  localStorage.setItem('theme', mode);
+function setTheme(mode) {
+  document.documentElement.setAttribute("data-theme", mode);
+  localStorage.setItem("theme", mode);
   updateThemeButton();
 }
-function initTheme(){
-  const stored = localStorage.getItem('theme');
-  if (stored) { setTheme(stored); return; }
-  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  setTheme(prefersDark ? 'dark' : 'light');
+function initTheme() {
+  const stored = localStorage.getItem("theme");
+  if (stored) {
+    setTheme(stored);
+    return;
+  }
+  const prefersDark =
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches;
+  setTheme(prefersDark ? "dark" : "light");
 }
 
 // Remove locale-specific titles; keep only EN base
-function stripLocaleTitles(){
+function stripLocaleTitles() {
   if (!window.I18N) return;
-  for (const k of Object.keys(window.I18N)){
-    if (k !== 'en' && window.I18N[k] && typeof window.I18N[k] === 'object'){
-      try { delete window.I18N[k].title; } catch {}
+  for (const k of Object.keys(window.I18N)) {
+    if (k !== "en" && window.I18N[k] && typeof window.I18N[k] === "object") {
+      try {
+        delete window.I18N[k].title;
+      } catch {}
     }
   }
 }
 
 // Footer separators and icons: "Support: â˜• Buy me a coffee Â· â¤ï¸ Ko-fi Â· ðŸŒ GitHub"
-function fixFooterSeparators_legacy(){
-  const supportEl = document.getElementById('f_support');
+function fixFooterSeparators_legacy() {
+  const supportEl = document.getElementById("f_support");
   if (!supportEl) return;
   const container = supportEl.parentElement; // the span wrapping the links
   if (!container) return;
 
   // Find anchors and their label spans
-  const buyA  = container.querySelector('a[href*="buymeacoffee"]');
+  const buyA = container.querySelector('a[href*="buymeacoffee"]');
   const kofiA = container.querySelector('a[href*="ko-fi"]');
-  const ghA   = container.querySelector('a[href*="github.com"]');
-  const buyL  = document.getElementById('f_buy');
-  const kofiL = document.getElementById('f_kofi');
-  const ghL   = document.getElementById('f_gh');
+  const ghA = container.querySelector('a[href*="github.com"]');
+  const buyL = document.getElementById("f_buy");
+  const kofiL = document.getElementById("f_kofi");
+  const ghL = document.getElementById("f_gh");
 
   // Clean any leading symbols in labels
-  const clean = (el)=>{ if (el) el.textContent = String(el.textContent||'').replace(/^\s*[^A-Za-z0-9]+\s*/, ''); };
-  clean(buyL); clean(kofiL); clean(ghL);
+  const clean = (el) => {
+    if (el)
+      el.textContent = String(el.textContent || "").replace(
+        /^\s*[^A-Za-z0-9]+\s*/,
+        ""
+      );
+  };
+  clean(buyL);
+  clean(kofiL);
+  clean(ghL);
 
   // Prepend icons INSIDE the labels (prevents gaps caused by link margins)
-  if (buyL)  buyL.textContent  = `â˜• ${buyL.textContent}`.trim();
+  if (buyL) buyL.textContent = `â˜• ${buyL.textContent}`.trim();
   if (kofiL) kofiL.textContent = `â¤ï¸ ${kofiL.textContent}`.trim();
-  if (ghL)   ghL.textContent   = `ðŸŒ ${ghL.textContent}`.trim();
+  if (ghL) ghL.textContent = `ðŸŒ ${ghL.textContent}`.trim();
 
   // Remove existing plain text nodes (old separators)
-  Array.from(container.childNodes).forEach(n=>{ if (n.nodeType === 3) n.remove(); });
+  Array.from(container.childNodes).forEach((n) => {
+    if (n.nodeType === 3) n.remove();
+  });
 
   // Rebuild separators exactly once: Buy Â· Ko-fi Â· GitHub
-  if (buyA && kofiA) container.insertBefore(document.createTextNode(' Â· '), kofiA);
-  if (kofiA && ghA)  container.insertBefore(document.createTextNode(' Â· '), ghA);
+  if (buyA && kofiA)
+    container.insertBefore(document.createTextNode(" Â· "), kofiA);
+  if (kofiA && ghA)
+    container.insertBefore(document.createTextNode(" Â· "), ghA);
 }
 
 // --- Overrides to avoid encoding issues in UI texts ---
-function updateThemeButton(){
-  const btn = document.getElementById('themeToggle');
+function updateThemeButton() {
+  const btn = document.getElementById("themeToggle");
   if (!btn) return;
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
   btn.textContent = isDark ? t().theme_light : t().theme_dark;
 }
 
-function fixFooterSeparators_legacy(){
-  const supportEl = document.getElementById('f_support');
+function fixFooterSeparators_legacy() {
+  const supportEl = document.getElementById("f_support");
   if (!supportEl) return;
   const container = supportEl.parentElement;
   if (!container) return;
-  const buyA  = container.querySelector('a[href*="buymeacoffee"]');
+  const buyA = container.querySelector('a[href*="buymeacoffee"]');
   const kofiA = container.querySelector('a[href*="ko-fi"]');
-  const ghA   = container.querySelector('a[href*="github.com"]');
-  const buyL  = document.getElementById('f_buy');
-  const kofiL = document.getElementById('f_kofi');
-  const ghL   = document.getElementById('f_gh');
-  const hasImgs = !!((buyL && buyL.querySelector('img')) || (kofiL && kofiL.querySelector('img')) || (ghL && ghL.querySelector('img')));
+  const ghA = container.querySelector('a[href*="github.com"]');
+  const buyL = document.getElementById("f_buy");
+  const kofiL = document.getElementById("f_kofi");
+  const ghL = document.getElementById("f_gh");
+  const hasImgs = !!(
+    (buyL && buyL.querySelector("img")) ||
+    (kofiL && kofiL.querySelector("img")) ||
+    (ghL && ghL.querySelector("img"))
+  );
   if (hasImgs) {
     // Old/original look provided via HTML with brand images and separators; leave as-is
     return;
@@ -311,71 +444,87 @@ function fixFooterSeparators_legacy(){
   const ensureIcon = (el, icon) => {
     if (!el) return;
     // If an <img> already exists inside the label, keep it (original icon)
-    if (el.querySelector('img')) return;
+    if (el.querySelector("img")) return;
     // Fallback: prepend emoji icon
-    const txt = String(el.textContent || '');
+    const txt = String(el.textContent || "");
     const trimmed = txt.trimStart();
     if (!trimmed.startsWith(icon)) el.textContent = `${icon} ${trimmed}`.trim();
   };
-  ensureIcon(buyL, 'â˜•');
-  ensureIcon(kofiL, 'ðŸµ');
-  ensureIcon(ghL, 'ðŸ™');
+  ensureIcon(buyL, "â˜•");
+  ensureIcon(kofiL, "ðŸµ");
+  ensureIcon(ghL, "ðŸ™");
 
   // Remove existing plain text nodes (old separators) and rebuild with a simple bullet
-  Array.from(container.childNodes).forEach(n=>{ if (n.nodeType === 3) n.remove(); });
-  if (buyA && kofiA) container.insertBefore(document.createTextNode(' Â· '), kofiA);
-  if (kofiA && ghA)  container.insertBefore(document.createTextNode(' Â· '), ghA);
+  Array.from(container.childNodes).forEach((n) => {
+    if (n.nodeType === 3) n.remove();
+  });
+  if (buyA && kofiA)
+    container.insertBefore(document.createTextNode(" Â· "), kofiA);
+  if (kofiA && ghA)
+    container.insertBefore(document.createTextNode(" Â· "), ghA);
 }
 
 // ---------- Validation & helpers ----------
-function ibanClean(s){ return String(s||'').replace(/[\s\-]/g,'').toUpperCase(); }
-function ibanIsValid(iban){
+function ibanClean(s) {
+  return String(s || "")
+    .replace(/[\s\-]/g, "")
+    .toUpperCase();
+}
+function ibanIsValid(iban) {
   const s = ibanClean(iban);
-  if(!/^[A-Z]{2}\d{2}[A-Z0-9]{1,30}$/.test(s)) return false;
-  const moved = s.slice(4)+s.slice(0,4);
-  const num = moved.replace(/[A-Z]/g, c => (c.charCodeAt(0)-55).toString());
+  if (!/^[A-Z]{2}\d{2}[A-Z0-9]{1,30}$/.test(s)) return false;
+  const moved = s.slice(4) + s.slice(0, 4);
+  const num = moved.replace(/[A-Z]/g, (c) => (c.charCodeAt(0) - 55).toString());
   let rem = 0;
-  for (let i=0;i<num.length;i+=7) rem = parseInt(String(rem)+num.substr(i,7),10)%97;
-  return rem===1; // ISO 13616 mod-97
+  for (let i = 0; i < num.length; i += 7)
+    rem = parseInt(String(rem) + num.substr(i, 7), 10) % 97;
+  return rem === 1; // ISO 13616 mod-97
 }
 // --- Amount helpers (locale-specific separators) ---
-const DOT_DECIMAL_LANGS = new Set(["en","ga","cy","gd","mt"]);
-function getDecimalSeparator(lang){ return DOT_DECIMAL_LANGS.has(lang) ? '.' : ','; }
-function parseAmountToNumber(amount){
-  const s = String(amount||'').trim().replace(/\s+/g,'');
+const DOT_DECIMAL_LANGS = new Set(["en", "ga", "cy", "gd", "mt"]);
+function getDecimalSeparator(lang) {
+  return DOT_DECIMAL_LANGS.has(lang) ? "." : ",";
+}
+function parseAmountToNumber(amount) {
+  const s = String(amount || "")
+    .trim()
+    .replace(/\s+/g, "");
   // be tolerant: treat comma as decimal when present, else dot
-  const normalized = s.includes(',') ? s.replace(',', '.') : s;
+  const normalized = s.includes(",") ? s.replace(",", ".") : s;
   const n = Number(normalized);
   return isFinite(n) ? n : NaN;
 }
-function formatAmountLocalized(n, lang){
+function formatAmountLocalized(n, lang) {
   const dec = getDecimalSeparator(lang);
-  const sign = n < 0 ? '-' : '';
+  const sign = n < 0 ? "-" : "";
   const fixed = Math.abs(n).toFixed(2);
-  const [intPart, fracPart] = fixed.split('.');
+  const [intPart, fracPart] = fixed.split(".");
   // group thousands with spaces
-  const g = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const g = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   return sign + g + (dec + fracPart);
 }
-function sanitizeAmountValue(value){
+function sanitizeAmountValue(value) {
   // allow digits, dot, comma; last separator becomes decimal, others removed
   // Examples: "1.234,56" â†’ "1234.56", "1,234.56" â†’ "1234.56"
-  let s = String(value||'').replace(/\s+/g, '').replace(/[^0-9.,]/g, '');
-  const lastDot = s.lastIndexOf('.');
-  const lastComma = s.lastIndexOf(',');
+  let s = String(value || "")
+    .replace(/\s+/g, "")
+    .replace(/[^0-9.,]/g, "");
+  const lastDot = s.lastIndexOf(".");
+  const lastComma = s.lastIndexOf(",");
   const sepIndex = Math.max(lastDot, lastComma);
-  let intPart = s, fracPart = '';
-  if (sepIndex !== -1){
+  let intPart = s,
+    fracPart = "";
+  if (sepIndex !== -1) {
     intPart = s.slice(0, sepIndex);
     fracPart = s.slice(sepIndex + 1);
   }
-  intPart = intPart.replace(/[.,]/g, '');
-  fracPart = fracPart.replace(/[.,]/g, '');
-  return sepIndex !== -1 ? intPart + '.' + fracPart : intPart;
+  intPart = intPart.replace(/[.,]/g, "");
+  fracPart = fracPart.replace(/[.,]/g, "");
+  return sepIndex !== -1 ? intPart + "." + fracPart : intPart;
 }
 
-function formatAmountUIKeepCaret(inputEl, lang){
-  const raw = String(inputEl.value||'');
+function formatAmountUIKeepCaret(inputEl, lang) {
+  const raw = String(inputEl.value || "");
   const caret = inputEl.selectionStart ?? raw.length;
   // Count digits before caret in the original raw input
   const digitsBefore = (raw.slice(0, caret).match(/\d/g) || []).length;
@@ -385,26 +534,28 @@ function formatAmountUIKeepCaret(inputEl, lang){
   // Sanitize and normalize
   let s = sanitizeAmountValue(raw); // digits, spaces, single dot as decimal (dot)
   // remove spaces for numeric processing
-  s = s.replace(/\s+/g,'');
+  s = s.replace(/\s+/g, "");
   // split into int/frac by dot (if any)
-  let intPart = s, fracPart = '';
-  const dotIdx = s.indexOf('.');
+  let intPart = s,
+    fracPart = "";
+  const dotIdx = s.indexOf(".");
   const hadDot = dotIdx !== -1; // remember if user typed a decimal separator
   if (dotIdx !== -1) {
     intPart = s.slice(0, dotIdx);
     fracPart = s.slice(dotIdx + 1);
   }
-  intPart = intPart.replace(/\D/g, '');
-  fracPart = fracPart.replace(/\D/g, '');
+  intPart = intPart.replace(/\D/g, "");
+  fracPart = fracPart.replace(/\D/g, "");
 
   // group thousands with spaces
-  const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   const dec = getDecimalSeparator(lang);
   // Show decimal separator if user just typed it, even without fractional digits yet
-  const formatted = grouped + ((fracPart || hadDot) ? (dec + fracPart) : '');
+  const formatted = grouped + (fracPart || hadDot ? dec + fracPart : "");
 
   // determine new caret position: after same number of digits
-  let seen = 0, newCaret = 0;
+  let seen = 0,
+    newCaret = 0;
   for (const ch of formatted) {
     if (/\d/.test(ch)) seen++;
     newCaret++;
@@ -418,36 +569,41 @@ function formatAmountUIKeepCaret(inputEl, lang){
   }
 
   inputEl.value = formatted;
-  try { inputEl.setSelectionRange(newCaret, newCaret); } catch {}
+  try {
+    inputEl.setSelectionRange(newCaret, newCaret);
+  } catch {}
 }
-function asEUR(amount){
-  if(!amount) return '';
+function asEUR(amount) {
+  if (!amount) return "";
   const n = parseAmountToNumber(amount);
-  if(!isFinite(n)||n<0.01) throw new Error(t().err_amount_min);
-  return 'EUR'+n.toFixed(2);
+  if (!isFinite(n) || n < 0.01) throw new Error(t().err_amount_min);
+  return "EUR" + n.toFixed(2);
 }
-function formatAmountFieldToTwoDecimals(){
-  const el = document.getElementById('amount');
+function formatAmountFieldToTwoDecimals() {
+  const el = document.getElementById("amount");
   const n = parseAmountToNumber(el.value);
   if (!isFinite(n)) return;
   el.value = formatAmountLocalized(n, LANG);
 }
 
 // IBAN auto spacing with caret preservation
-function formatIbanUIKeepCaret(inputEl){
+function formatIbanUIKeepCaret(inputEl) {
   const raw = inputEl.value;
   const selStart = inputEl.selectionStart || 0;
   let rawIndex = 0;
-  for (let i=0, r=0; i<raw.length && i<selStart; i++){
+  for (let i = 0, r = 0; i < raw.length && i < selStart; i++) {
     if (/\S/.test(raw[i])) r++;
     rawIndex = r;
   }
-  const normalized = raw.replace(/[^A-Za-z0-9]/g,'').toUpperCase();
+  const normalized = raw.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
   const chunks = normalized.match(/.{1,4}/g) || [];
-  const formatted = chunks.join(' ');
-  let formattedCaret = 0, seenRaw = 0;
-  for (const ch of formatted){
-    if (ch !== ' ') { seenRaw++; }
+  const formatted = chunks.join(" ");
+  let formattedCaret = 0,
+    seenRaw = 0;
+  for (const ch of formatted) {
+    if (ch !== " ") {
+      seenRaw++;
+    }
     formattedCaret++;
     if (seenRaw >= rawIndex) break;
   }
@@ -456,62 +612,68 @@ function formatIbanUIKeepCaret(inputEl){
   inputEl.setSelectionRange(formattedCaret, formattedCaret);
 }
 
-function byteLenUtf8(str){ return new TextEncoder().encode(str).length; }
+function byteLenUtf8(str) {
+  return new TextEncoder().encode(str).length;
+}
 
-function collectPayloadFields(v, opts={}){
+function collectPayloadFields(v, opts = {}) {
   const lines = [];
   const draft = opts.draft;
-  lines.push('BCD', v.version || '001', v.charset || '1', 'SCT');
+  lines.push("BCD", v.version || "001", v.charset || "1", "SCT");
   // Ensure BIC is uppercase in the payload
-  lines.push(v.bic ? v.bic.trim().toUpperCase() : '');
-  lines.push((v.name||'').trim());
+  lines.push(v.bic ? v.bic.trim().toUpperCase() : "");
+  lines.push((v.name || "").trim());
   lines.push(ibanClean(v.iban));
   if (draft) {
     const n = parseAmountToNumber(v.amount);
-    lines.push(isFinite(n) && n>=0.01 ? 'EUR'+n.toFixed(2) : '');
+    lines.push(isFinite(n) && n >= 0.01 ? "EUR" + n.toFixed(2) : "");
   } else {
-    lines.push(v.amount || '');
+    lines.push(v.amount || "");
   }
-  lines.push(v.purpose ? v.purpose.toUpperCase() : '');
-  const hasStruct = !!v.rem_struct, hasUnstruct = !!v.rem_unstruct;
-  lines.push(hasStruct ? v.rem_struct.trim() : '');
-  lines.push(hasUnstruct ? v.rem_unstruct.trim() : '');
-  lines.push(v.b2o ? v.b2o.trim() : '');
+  lines.push(v.purpose ? v.purpose.toUpperCase() : "");
+  const hasStruct = !!v.rem_struct,
+    hasUnstruct = !!v.rem_unstruct;
+  lines.push(hasStruct ? v.rem_struct.trim() : "");
+  lines.push(hasUnstruct ? v.rem_unstruct.trim() : "");
+  lines.push(v.b2o ? v.b2o.trim() : "");
   return lines;
 }
 
 // Build payload "draft" to compute live byte length even if not valid yet
-function buildPayloadDraft(){
+function buildPayloadDraft() {
   const v = {
-    name: document.getElementById('name').value || '',
-    iban: document.getElementById('iban').value || '',
-    amount: document.getElementById('amount').value || '',
-    rem_unstruct: document.getElementById('rem_unstruct').value || '',
-    rem_struct: document.getElementById('rem_struct').value || '',
-    purpose: document.getElementById('purpose').value || '',
-    bic: document.getElementById('bic').value || '',
-    b2o: document.getElementById('b2o').value || '',
-    version: document.getElementById('version').value,
-    charset: document.getElementById('charset').value
+    name: document.getElementById("name").value || "",
+    iban: document.getElementById("iban").value || "",
+    amount: document.getElementById("amount").value || "",
+    rem_unstruct: document.getElementById("rem_unstruct").value || "",
+    rem_struct: document.getElementById("rem_struct").value || "",
+    purpose: document.getElementById("purpose").value || "",
+    bic: document.getElementById("bic").value || "",
+    b2o: document.getElementById("b2o").value || "",
+    version: document.getElementById("version").value,
+    charset: document.getElementById("charset").value,
   };
-  const lines = collectPayloadFields(v, {draft:true});
-  return lines.join('\n').replace(/(\n)+$/,'');
+  const lines = collectPayloadFields(v, { draft: true });
+  return lines.join("\n").replace(/(\n)+$/, "");
 }
 
-function buildPayload(v){
-  const hasStruct = !!v.rem_struct, hasUnstruct = !!v.rem_unstruct;
+function buildPayload(v) {
+  const hasStruct = !!v.rem_struct,
+    hasUnstruct = !!v.rem_unstruct;
   if (hasStruct && hasUnstruct)
-    throw new Error(LANG==="de"
-      ? "Bitte nur EINE Referenz verwenden: entweder â€žStrukturiertâ€œ ODER â€žVerwendungszweckâ€œ."
-      : "Use only ONE reference: either structured OR free text.");
+    throw new Error(
+      LANG === "de"
+        ? "Bitte nur EINE Referenz verwenden: entweder â€žStrukturiertâ€œ ODER â€žVerwendungszweckâ€œ."
+        : "Use only ONE reference: either structured OR free text."
+    );
   const lines = collectPayloadFields({
     ...v,
-    amount: v.amount ? asEUR(v.amount) : ''
+    amount: v.amount ? asEUR(v.amount) : "",
   });
-  return lines.join('\n').replace(/(\n)+$/,'');
+  return lines.join("\n").replace(/(\n)+$/, "");
 }
 
-function ensureLimits(payload){
+function ensureLimits(payload) {
   const bytes = byteLenUtf8(payload);
   if (bytes > 331) throw new Error(t().err_len(bytes));
   return bytes;
@@ -519,224 +681,292 @@ function ensureLimits(payload){
 
 // ---------- QR rendering & export ----------
 let qrobj = null;
-function setDownloadEnabled(enabled){
-  document.getElementById('saveBtn').disabled = !enabled;
-  document.getElementById('saveCaret').disabled = !enabled;
-  document.getElementById('savePNG').disabled = !enabled;
-  document.getElementById('saveSVG').disabled = !enabled;
-  document.getElementById('saveJPG').disabled = !enabled;
+function setDownloadEnabled(enabled) {
+  document.getElementById("saveBtn").disabled = !enabled;
+  document.getElementById("saveCaret").disabled = !enabled;
+  document.getElementById("savePNG").disabled = !enabled;
+  document.getElementById("saveSVG").disabled = !enabled;
+  document.getElementById("saveJPG").disabled = !enabled;
 }
-function renderQR(text){
-  if (typeof window.QRCode === "undefined") throw new Error(t().err_qrlib);
-  const box = document.getElementById('qrcanvas');
-  box.innerHTML = '';
-  qrobj = new QRCode(box, { width:300, height:300, correctLevel: QRCode.CorrectLevel.M });
-  if (typeof qrobj.makeCode === 'function') qrobj.makeCode(text);
-  else { box.innerHTML=''; qrobj = new QRCode(box, { text, width:300, height:300, correctLevel: QRCode.CorrectLevel.M }); }
-  hasQR = true; setDownloadEnabled(true);
-}
-function clearQR(){
-  document.getElementById('qrcanvas').innerHTML = '';
-  document.getElementById('payload').textContent = '';
-  document.getElementById('bytes').textContent = 'â€“';
-  document.getElementById('liveInfo').textContent = 'â€“';
-  hasQR = false; setDownloadEnabled(false);
-  closeSaveMenu();
-}
-function showPayload(payload, bytes){
-  document.getElementById('payload').textContent = payload.replace(/\n/g,'âŽ\n');
-  document.getElementById('bytes').textContent = `${bytes} / 331`;
-}
-function setStatus(msg, ok=false, warn=false){
-  const s = document.getElementById('status');
-  s.textContent = msg;
-  s.className = 'status ' + (warn? 'warn' : (ok?'ok':'err'));
-}
+function renderQR(text) {
+  if (typeof qrcode === "undefined") throw new Error(t().err_qrlib);
+  const box = document.getElementById("qrcanvas");
+  box.innerHTML = "";
 
-// Override with clean error message (redeclared intentionally)
-function buildPayload(v){
-  const hasStruct = !!v.rem_struct, hasUnstruct = !!v.rem_unstruct;
-  if (hasStruct && hasUnstruct)
-    throw new Error(LANG==="de"
-      ? "Bitte nur EINE Referenz verwenden: entweder 'Strukturiert' ODER 'Verwendungszweck'."
-      : "Use only ONE reference: either structured OR free text.");
-  const lines = collectPayloadFields({
-    ...v,
-    amount: v.amount ? asEUR(v.amount) : ''
-  });
-  return lines.join('\n').replace(/(\n)+$/,'');
-}
+  // Auto-detect optimal type number (start small, increase if needed)
+  let typeNumber = 4;
+  let qrSuccess = false;
+  let tempQR = null;
 
-// --- Safe overrides to normalize previously mis-encoded strings ---
-function clearQR(){
-  document.getElementById('qrcanvas').innerHTML = '';
-  document.getElementById('payload').textContent = '';
-  document.getElementById('bytes').textContent = '';
-  document.getElementById('liveInfo').textContent = '';
-  hasQR = false; setDownloadEnabled(false);
-  closeSaveMenu();
-}
-function showPayload(payload, bytes){
-  document.getElementById('payload').textContent = payload.replace(/\n/g,'\\n\n');
-  document.getElementById('bytes').textContent = `${bytes} / 331`;
-}
+  while (typeNumber <= 40 && !qrSuccess) {
+    try {
+      tempQR = qrcode(typeNumber, "M");
+      tempQR.addData(text);
+      tempQR.make();
+      qrSuccess = true;
+      qrobj = tempQR; // Only assign if successful
+    } catch (e) {
+      // qrcode.js throws strings, not Error objects
+      const errMsg = typeof e === "string" ? e : e.message || String(e);
+      if (errMsg.includes("overflow")) {
+        typeNumber++;
+      } else {
+        throw e;
+      }
+    }
+  }
 
-// True vector SVG export from QR matrix (no extra lib)
-function exportSVG(){
-  if (!hasQR || !qrobj || !qrobj._oQRCode) { setStatus(t().status_noqr, false); return; }
-  const qr = qrobj._oQRCode;
-  const n = typeof qr.getModuleCount === "function" ? qr.getModuleCount() : qr.moduleCount;
-  if (!n) { setStatus(t().status_noqr, false); return; }
+  if (!qrSuccess) throw new Error("QR code data too large");
+
+  // Render as SVG
+  const n = qrobj.getModuleCount();
   let rects = "";
   for (let r = 0; r < n; r++) {
     for (let c = 0; c < n; c++) {
-      const dark = typeof qr.isDark === "function" ? qr.isDark(r, c) : (qr.modules && qr.modules[r] && qr.modules[r][c]);
-      if (dark) rects += `<rect x="${c}" y="${r}" width="1" height="1"/>`;
+      if (qrobj.isDark(r, c))
+        rects += `<rect x="${c}" y="${r}" width="1" height="1"/>`;
     }
   }
-  const svg =
-`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges">
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="#fff"/><g fill="#000">${rects}</g></svg>`;
+  box.innerHTML = svg;
+
+  hasQR = true;
+  setDownloadEnabled(true);
+}
+function clearQR() {
+  document.getElementById("qrcanvas").innerHTML = "";
+  document.getElementById("payload").textContent = "";
+  document.getElementById("bytes").textContent = "â€“";
+  document.getElementById("liveInfo").textContent = "â€“";
+  hasQR = false;
+  setDownloadEnabled(false);
+  closeSaveMenu();
+}
+function showPayload(payload, bytes) {
+  document.getElementById("payload").textContent = payload.replace(
+    /\n/g,
+    "âŽ\n"
+  );
+  document.getElementById("bytes").textContent = `${bytes} / 331`;
+}
+function setStatus(msg, ok = false, warn = false) {
+  const s = document.getElementById("status");
+  s.textContent = msg;
+  s.className = "status " + (warn ? "warn" : ok ? "ok" : "err");
+}
+
+// Override with clean error message (redeclared intentionally)
+function buildPayload(v) {
+  const hasStruct = !!v.rem_struct,
+    hasUnstruct = !!v.rem_unstruct;
+  if (hasStruct && hasUnstruct)
+    throw new Error(
+      LANG === "de"
+        ? "Bitte nur EINE Referenz verwenden: entweder 'Strukturiert' ODER 'Verwendungszweck'."
+        : "Use only ONE reference: either structured OR free text."
+    );
+  const lines = collectPayloadFields({
+    ...v,
+    amount: v.amount ? asEUR(v.amount) : "",
+  });
+  return lines.join("\n").replace(/(\n)+$/, "");
+}
+
+// --- Safe overrides to normalize previously mis-encoded strings ---
+function clearQR() {
+  document.getElementById("qrcanvas").innerHTML = "";
+  document.getElementById("payload").textContent = "";
+  document.getElementById("bytes").textContent = "";
+  document.getElementById("liveInfo").textContent = "";
+  hasQR = false;
+  setDownloadEnabled(false);
+  closeSaveMenu();
+}
+function showPayload(payload, bytes) {
+  document.getElementById("payload").textContent = payload.replace(
+    /\n/g,
+    "\\n\n"
+  );
+  document.getElementById("bytes").textContent = `${bytes} / 331`;
+}
+
+// True vector SVG export from QR matrix (no extra lib)
+function exportSVG() {
+  if (!hasQR || !qrobj) {
+    setStatus(t().status_noqr, false);
+    return;
+  }
+  const n = qrobj.getModuleCount();
+  if (!n) {
+    setStatus(t().status_noqr, false);
+    return;
+  }
+  let rects = "";
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      if (qrobj.isDark(r, c))
+        rects += `<rect x="${c}" y="${r}" width="1" height="1"/>`;
+    }
+  }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges">
   <rect width="100%" height="100%" fill="#fff"/>
   <g fill="#000">${rects}</g>
 </svg>`;
-  const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+  const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'epc-qr.svg'; a.click();
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "epc-qr.svg";
+  a.click();
   URL.revokeObjectURL(url);
 }
 
-function getQRNodes(){
-  const box=document.getElementById('qrcanvas');
-  return { img: box.querySelector('img'), canvas: box.querySelector('canvas') };
+function getQRNodes() {
+  const box = document.getElementById("qrcanvas");
+  return { img: box.querySelector("img"), canvas: box.querySelector("canvas") };
 }
-function downloadDataURL(dataURL, filename){
-  const a=document.createElement('a'); a.href=dataURL; a.download=filename; a.click();
+function downloadDataURL(dataURL, filename) {
+  const a = document.createElement("a");
+  a.href = dataURL;
+  a.download = filename;
+  a.click();
 }
-function exportPNG(){
-  const {img, canvas} = getQRNodes();
-  if (canvas) return downloadDataURL(canvas.toDataURL('image/png'), 'epc-qr.png');
-  if (img && img.src) return downloadDataURL(img.src, 'epc-qr.png');
+function exportPNG() {
+  const { img, canvas } = getQRNodes();
+  if (canvas)
+    return downloadDataURL(canvas.toDataURL("image/png"), "epc-qr.png");
+  if (img && img.src) return downloadDataURL(img.src, "epc-qr.png");
   setStatus(t().status_noqr, false);
 }
-function exportJPG(){
-  const {img, canvas} = getQRNodes();
-  if (canvas) return downloadDataURL(canvas.toDataURL('image/jpeg', 0.92), 'epc-qr.jpg');
-  if (img && img.src){
-    const c = document.createElement('canvas'); c.width=300; c.height=300;
-    const ctx = c.getContext('2d');
+function exportJPG() {
+  const { img, canvas } = getQRNodes();
+  if (canvas)
+    return downloadDataURL(canvas.toDataURL("image/jpeg", 0.92), "epc-qr.jpg");
+  if (img && img.src) {
+    const c = document.createElement("canvas");
+    c.width = 300;
+    c.height = 300;
+    const ctx = c.getContext("2d");
     const im = new Image();
-    im.onload = function(){ ctx.drawImage(im,0,0,300,300); downloadDataURL(c.toDataURL('image/jpeg', 0.92), 'epc-qr.jpg'); };
-    im.src = img.src; return;
+    im.onload = function () {
+      ctx.drawImage(im, 0, 0, 300, 300);
+      downloadDataURL(c.toDataURL("image/jpeg", 0.92), "epc-qr.jpg");
+    };
+    im.src = img.src;
+    return;
   }
   setStatus(t().status_noqr, false);
 }
 
 // Save-as UI
-function toggleSaveMenu(){
-  const menu = document.getElementById('saveMenu');
-  const caret = document.getElementById('saveCaret');
-  const open = !menu.classList.contains('open');
+function toggleSaveMenu() {
+  const menu = document.getElementById("saveMenu");
+  const caret = document.getElementById("saveCaret");
+  const open = !menu.classList.contains("open");
   if (open && !hasQR) return; // don't open if no QR
-  menu.classList.toggle('open', open);
-  caret.setAttribute('aria-expanded', String(open));
+  menu.classList.toggle("open", open);
+  caret.setAttribute("aria-expanded", String(open));
 }
-function closeSaveMenu(){
-  const menu = document.getElementById('saveMenu');
-  const caret = document.getElementById('saveCaret');
-  menu.classList.remove('open');
-  caret.setAttribute('aria-expanded', 'false');
+function closeSaveMenu() {
+  const menu = document.getElementById("saveMenu");
+  const caret = document.getElementById("saveCaret");
+  menu.classList.remove("open");
+  caret.setAttribute("aria-expanded", "false");
 }
 
 // ---------- Live UX updates ----------
-function updateLiveUI(){
+function updateLiveUI() {
   const dict = t();
 
   // --- IBAN-Validierung (live) ---
-  const ibanEl = document.getElementById('iban');
-  const ibanHint = document.getElementById('ibanHint');
+  const ibanEl = document.getElementById("iban");
+  const ibanHint = document.getElementById("ibanHint");
   const clean = ibanClean(ibanEl.value);
 
   if (clean.length >= 8) {
     const ok = ibanIsValid(ibanEl.value);
-    ibanEl.classList.toggle('is-valid', ok);
-    ibanEl.classList.toggle('is-invalid', !ok);
+    ibanEl.classList.toggle("is-valid", ok);
+    ibanEl.classList.toggle("is-invalid", !ok);
     ibanHint.textContent = ok ? dict.hint_iban_ok : dict.hint_iban_bad;
   } else {
-    ibanEl.classList.remove('is-valid','is-invalid');
-    ibanHint.textContent = '';
+    ibanEl.classList.remove("is-valid", "is-invalid");
+    ibanHint.textContent = "";
   }
 
   // --- Konflikt: Strukturierte Referenz vs. Verwendungszweck ---
-  const unstructEl = document.getElementById('rem_unstruct');
-  const structEl   = document.getElementById('rem_struct');
+  const unstructEl = document.getElementById("rem_unstruct");
+  const structEl = document.getElementById("rem_struct");
   const conflict = !!unstructEl.value.trim() && !!structEl.value.trim();
-  const liveInfo = document.getElementById('liveInfo');
+  const liveInfo = document.getElementById("liveInfo");
 
   // Erst zurÃ¼cksetzen
-  unstructEl.classList.remove('is-invalid');
-  structEl.classList.remove('is-invalid');
+  unstructEl.classList.remove("is-invalid");
+  structEl.classList.remove("is-invalid");
 
   if (conflict) {
     // Beide rot hervorheben (Fehlerzustand hat via CSS Fokus-Prio)
-    unstructEl.classList.add('is-invalid');
-    structEl.classList.add('is-invalid');
+    unstructEl.classList.add("is-invalid");
+    structEl.classList.add("is-invalid");
 
     liveInfo.textContent = dict.live_conflict;
     setStatus(dict.live_conflict, false, true);
   } else {
     liveInfo.textContent = dict.live_ok;
     // Warn-Status zurÃ¼cknehmen, falls er nur vom Konflikt kam
-    const s = document.getElementById('status');
-    if (s.classList.contains('warn')) setStatus('');
+    const s = document.getElementById("status");
+    if (s.classList.contains("warn")) setStatus("");
   }
 
   // --- Live-BytezÃ¤hler anhand Draft-Payload ---
   try {
     const draft = buildPayloadDraft();
     const bytes = byteLenUtf8(draft);
-    document.getElementById('bytes').textContent = `${bytes} / 331`;
+    document.getElementById("bytes").textContent = `${bytes} / 331`;
   } catch {
-    document.getElementById('bytes').textContent = 'â€“';
+    document.getElementById("bytes").textContent = "â€“";
   }
 }
 
 // Debounced live UI updates to avoid excessive re-renders while typing
 let _liveUITimer = null;
-function queueLiveUI(delayMs = 120){
-  try { clearTimeout(_liveUITimer); } catch {}
+function queueLiveUI(delayMs = 120) {
+  try {
+    clearTimeout(_liveUITimer);
+  } catch {}
   _liveUITimer = setTimeout(updateLiveUI, delayMs);
 }
 
-
 // ---------- Events ----------
-document.getElementById('gen').addEventListener('click', ()=>{
-  try{
+document.getElementById("gen").addEventListener("click", () => {
+  try {
     // normalize amount visually
-    const amountEl = document.getElementById('amount');
+    const amountEl = document.getElementById("amount");
     // sanitize current value according to language rules
     amountEl.value = sanitizeAmountValue(amountEl.value);
     const n = parseAmountToNumber(amountEl.value);
     if (isFinite(n)) amountEl.value = formatAmountLocalized(n, LANG);
 
     const v = {
-      name: document.getElementById('name').value || '',
-      iban: document.getElementById('iban').value || '',
-      amount: document.getElementById('amount').value || '',
-      rem_unstruct: document.getElementById('rem_unstruct').value || '',
-      rem_struct: document.getElementById('rem_struct').value || '',
-      purpose: document.getElementById('purpose').value || '',
-      bic: document.getElementById('bic').value || '',
-      b2o: document.getElementById('b2o').value || '',
-      version: document.getElementById('version').value,
-      charset: document.getElementById('charset').value
+      name: document.getElementById("name").value || "",
+      iban: document.getElementById("iban").value || "",
+      amount: document.getElementById("amount").value || "",
+      rem_unstruct: document.getElementById("rem_unstruct").value || "",
+      rem_struct: document.getElementById("rem_struct").value || "",
+      purpose: document.getElementById("purpose").value || "",
+      bic: document.getElementById("bic").value || "",
+      b2o: document.getElementById("b2o").value || "",
+      version: document.getElementById("version").value,
+      charset: document.getElementById("charset").value,
     };
 
     const dict = t();
-    if(!v.name.trim()) throw new Error(dict.err_name);
-    if(!ibanIsValid(v.iban)) throw new Error(dict.err_iban);
-    if(v.purpose && !/^[A-Za-z0-9]{1,4}$/.test(v.purpose)) throw new Error(dict.err_purpose);
+    if (!v.name.trim()) throw new Error(dict.err_name);
+    if (!ibanIsValid(v.iban)) throw new Error(dict.err_iban);
+    if (v.purpose && !/^[A-Za-z0-9]{1,4}$/.test(v.purpose))
+      throw new Error(dict.err_purpose);
     // Enforce uppercase BIC: convert in UI; validate uppercase pattern here
-    if(v.bic && !/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(v.bic)) throw new Error(dict.err_bic);
+    if (v.bic && !/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(v.bic))
+      throw new Error(dict.err_bic);
 
     const payload = buildPayload(v);
     const bytes = ensureLimits(payload);
@@ -744,70 +974,108 @@ document.getElementById('gen').addEventListener('click', ()=>{
     renderQR(payload);
     showPayload(payload, bytes);
     setStatus(dict.status_ok, true);
-  }catch(err){
+  } catch (err) {
     setStatus(err.message || String(err), false);
     console.error(err);
   }
 });
 
 // Save-as split
-document.getElementById('saveBtn').addEventListener('click', toggleSaveMenu);
-document.getElementById('saveCaret').addEventListener('click', toggleSaveMenu);
-document.getElementById('savePNG').addEventListener('click', ()=>{ closeSaveMenu(); exportPNG(); });
-document.getElementById('saveSVG').addEventListener('click', ()=>{ closeSaveMenu(); exportSVG(); });
-document.getElementById('saveJPG').addEventListener('click', ()=>{ closeSaveMenu(); exportJPG(); });
-document.addEventListener('click', (e)=>{ const split = document.getElementById('save-split'); if (!split.contains(e.target)) closeSaveMenu(); });
-document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closeSaveMenu(); });
+document.getElementById("saveBtn").addEventListener("click", toggleSaveMenu);
+document.getElementById("saveCaret").addEventListener("click", toggleSaveMenu);
+document.getElementById("savePNG").addEventListener("click", () => {
+  closeSaveMenu();
+  exportPNG();
+});
+document.getElementById("saveSVG").addEventListener("click", () => {
+  closeSaveMenu();
+  exportSVG();
+});
+document.getElementById("saveJPG").addEventListener("click", () => {
+  closeSaveMenu();
+  exportJPG();
+});
+document.addEventListener("click", (e) => {
+  const split = document.getElementById("save-split");
+  if (!split.contains(e.target)) closeSaveMenu();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeSaveMenu();
+});
 
 // Example data
-document.getElementById('ex').addEventListener('click', ()=>{
+document.getElementById("ex").addEventListener("click", () => {
   const dict = t();
   const ex = dict.exdata;
   const map = {
-    name: ex.name, iban: ex.iban, amount: ex.amount,
-    rem_unstruct: ex.unstruct, rem_struct: ex.struct, purpose: ex.purpose,
-    bic: ex.bic, b2o: ex.b2o
+    name: ex.name,
+    iban: ex.iban,
+    amount: ex.amount,
+    rem_unstruct: ex.unstruct,
+    rem_struct: ex.struct,
+    purpose: ex.purpose,
+    bic: ex.bic,
+    b2o: ex.b2o,
   };
-  for (const id in map) { const el = document.getElementById(id); if (el) el.value = map[id]; }
-  const ibanEl = document.getElementById('iban'); if (ibanEl && ibanEl.value) formatIbanUIKeepCaret(ibanEl);
+  for (const id in map) {
+    const el = document.getElementById(id);
+    if (el) el.value = map[id];
+  }
+  const ibanEl = document.getElementById("iban");
+  if (ibanEl && ibanEl.value) formatIbanUIKeepCaret(ibanEl);
   clearQR();
   setStatus(dict.status_prefill, true);
   updateLiveUI();
 });
 
 // Input reactions: clear QR, IBAN spacing, remember lastChanged, live checks
-for (const id of ["name","iban","amount","rem_unstruct","rem_struct","purpose","bic","b2o","version","charset"]) {
+for (const id of [
+  "name",
+  "iban",
+  "amount",
+  "rem_unstruct",
+  "rem_struct",
+  "purpose",
+  "bic",
+  "b2o",
+  "version",
+  "charset",
+]) {
   const el = document.getElementById(id);
   if (!el) continue;
-  el.addEventListener("input", ()=>{
+  el.addEventListener("input", () => {
     if (id === "iban") formatIbanUIKeepCaret(el);
     if (id === "amount") formatAmountUIKeepCaret(el, LANG);
     if (id === "bic" || id === "rem_struct") {
       const pos = el.selectionStart;
-      el.value = String(el.value||"").toUpperCase();
-      if (typeof pos === 'number') try{ el.setSelectionRange(pos, pos); }catch{}
+      el.value = String(el.value || "").toUpperCase();
+      if (typeof pos === "number")
+        try {
+          el.setSelectionRange(pos, pos);
+        } catch {}
     }
     if (hasQR) clearQR();
     lastChanged = id; // track which field triggered the change
     queueLiveUI();
   });
-  if (id === "amount") el.addEventListener("blur", formatAmountFieldToTwoDecimals);
+  if (id === "amount")
+    el.addEventListener("blur", formatAmountFieldToTwoDecimals);
 }
 
 // Theme toggle
-document.getElementById('themeToggle').addEventListener('click', ()=>{
-  const current = document.documentElement.getAttribute('data-theme');
-  setTheme(current === 'dark' ? 'light' : 'dark');
+document.getElementById("themeToggle").addEventListener("click", () => {
+  const current = document.documentElement.getAttribute("data-theme");
+  setTheme(current === "dark" ? "light" : "dark");
 });
 
 // ---------- Init ----------
-(function init(){
+(function init() {
   ensureI18N();
   initTheme();
   const pref = detectPreferredLang();
   populateLangSelect(pref);
   if (!window.I18N[pref] && OPTIONAL_LOCALES.includes(pref)) {
-    loadLocale(pref).then(()=> applyLang(window.I18N[pref] ? pref : "en"));
+    loadLocale(pref).then(() => applyLang(window.I18N[pref] ? pref : "en"));
   } else {
     applyLang(window.I18N[pref] ? pref : "en");
   }
@@ -816,39 +1084,46 @@ document.getElementById('themeToggle').addEventListener('click', ()=>{
     // Fix base EN strings if source encoding ever got mangled
     const en = window.I18N && window.I18N.en;
     if (en) {
-      en.lf = 'Line breaks are shown as \\n.';
-      if (en.placeholders) en.placeholders.struct = 'e.g., RF18XXXX';
+      en.lf = "Line breaks are shown as \\n.";
+      if (en.placeholders) en.placeholders.struct = "e.g., RF18XXXX";
       en.status_prefill = "Example data filled. Click 'Generate QR code'.";
-      en.err_purpose = 'Purpose code must be 1–4 alphanumeric characters.';
-      en.footer_buy = 'Buy me a coffee';
-      en.footer_kofi = 'Ko-fi';
-      en.footer_gh = 'GitHub';
+      en.err_purpose = "Purpose code must be 1–4 alphanumeric characters.";
+      en.footer_buy = "Buy me a coffee";
+      en.footer_kofi = "Ko-fi";
+      en.footer_gh = "GitHub";
     }
-    const statusEl = document.getElementById('status');
-    if (statusEl) { statusEl.setAttribute('role','status'); statusEl.setAttribute('aria-live','polite'); }
-    const ibanEl = document.getElementById('iban');
+    const statusEl = document.getElementById("status");
+    if (statusEl) {
+      statusEl.setAttribute("role", "status");
+      statusEl.setAttribute("aria-live", "polite");
+    }
+    const ibanEl = document.getElementById("iban");
     if (ibanEl) {
-      ibanEl.setAttribute('autocapitalize','characters');
-      ibanEl.setAttribute('inputmode','text');
-      ibanEl.setAttribute('pattern','^[A-Z]{2}[0-9]{2}[A-Z0-9 ]{0,30}$');
-      ibanEl.setAttribute('title','Starts with country code + 2 digits; letters/digits, spaces allowed');
+      ibanEl.setAttribute("autocapitalize", "characters");
+      ibanEl.setAttribute("inputmode", "text");
+      ibanEl.setAttribute("pattern", "^[A-Z]{2}[0-9]{2}[A-Z0-9 ]{0,30}$");
+      ibanEl.setAttribute(
+        "title",
+        "Starts with country code + 2 digits; letters/digits, spaces allowed"
+      );
     }
-    const structEl = document.getElementById('rem_struct');
+    const structEl = document.getElementById("rem_struct");
     if (structEl) {
-      structEl.setAttribute('autocapitalize','characters');
-      structEl.setAttribute('pattern','^RF[0-9]{2}[A-Z0-9]{1,21}$');
-      structEl.setAttribute('title','RF + 2 digits + 1â€“21 letters/digits (no spaces)');
+      structEl.setAttribute("autocapitalize", "characters");
+      structEl.setAttribute("pattern", "^RF[0-9]{2}[A-Z0-9]{1,21}$");
+      structEl.setAttribute(
+        "title",
+        "RF + 2 digits + 1â€“21 letters/digits (no spaces)"
+      );
     }
-    const saveCaret = document.getElementById('saveCaret');
+    const saveCaret = document.getElementById("saveCaret");
     if (saveCaret) {
-      saveCaret.setAttribute('aria-label','Open save format menu');
-      saveCaret.textContent = 'â–¼';
+      saveCaret.setAttribute("aria-label", "Open save format menu");
+      saveCaret.textContent = "â–¼";
     }
   } catch {}
-  const ibanEl = document.getElementById('iban');
+  const ibanEl = document.getElementById("iban");
   if (ibanEl && ibanEl.value) formatIbanUIKeepCaret(ibanEl);
   clearQR(); // start disabled
   updateLiveUI();
 })();
-
-
