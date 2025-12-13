@@ -832,7 +832,11 @@ function exportSVG() {
 
 function getQRNodes() {
   const box = document.getElementById("qrcanvas");
-  return { img: box.querySelector("img"), canvas: box.querySelector("canvas") };
+  return {
+    img: box.querySelector("img"),
+    canvas: box.querySelector("canvas"),
+    svg: box.querySelector("svg"),
+  };
 }
 function downloadDataURL(dataURL, filename) {
   const a = document.createElement("a");
@@ -840,17 +844,44 @@ function downloadDataURL(dataURL, filename) {
   a.download = filename;
   a.click();
 }
+function svgToCanvas(svg, callback) {
+  const svgData = new XMLSerializer().serializeToString(svg);
+  const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+  const url = URL.createObjectURL(svgBlob);
+
+  const img = new Image();
+  img.onload = function () {
+    const canvas = document.createElement("canvas");
+    canvas.width = 300;
+    canvas.height = 300;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, 300, 300);
+    URL.revokeObjectURL(url);
+    callback(canvas);
+  };
+  img.src = url;
+}
 function exportPNG() {
-  const { img, canvas } = getQRNodes();
-  if (canvas)
+  const { img, canvas, svg } = getQRNodes();
+  if (canvas) {
     return downloadDataURL(canvas.toDataURL("image/png"), "epc-qr.png");
-  if (img && img.src) return downloadDataURL(img.src, "epc-qr.png");
+  }
+  if (img && img.src) {
+    return downloadDataURL(img.src, "epc-qr.png");
+  }
+  if (svg) {
+    svgToCanvas(svg, (canvas) => {
+      downloadDataURL(canvas.toDataURL("image/png"), "epc-qr.png");
+    });
+    return;
+  }
   setStatus(t().status_noqr, false);
 }
 function exportJPG() {
-  const { img, canvas } = getQRNodes();
-  if (canvas)
+  const { img, canvas, svg } = getQRNodes();
+  if (canvas) {
     return downloadDataURL(canvas.toDataURL("image/jpeg", 0.92), "epc-qr.jpg");
+  }
   if (img && img.src) {
     const c = document.createElement("canvas");
     c.width = 300;
@@ -862,6 +893,12 @@ function exportJPG() {
       downloadDataURL(c.toDataURL("image/jpeg", 0.92), "epc-qr.jpg");
     };
     im.src = img.src;
+    return;
+  }
+  if (svg) {
+    svgToCanvas(svg, (canvas) => {
+      downloadDataURL(canvas.toDataURL("image/jpeg", 0.92), "epc-qr.jpg");
+    });
     return;
   }
   setStatus(t().status_noqr, false);
