@@ -693,27 +693,36 @@ function renderQR(text) {
   const box = document.getElementById("qrcanvas");
   box.innerHTML = "";
 
-  // Auto-detect optimal type number (start small, increase if needed)
+  // Auto-detect optimal type number and error correction level
+  // Try M first (medium error correction), then fall back to L (low) if needed
+  const errorLevels = ["M", "L"];
   let typeNumber = 4;
   let qrSuccess = false;
   let tempQR = null;
+  let usedErrorLevel = "M";
 
-  while (typeNumber <= 40 && !qrSuccess) {
-    try {
-      tempQR = qrcode(typeNumber, "M");
-      tempQR.addData(text);
-      tempQR.make();
-      qrSuccess = true;
-      qrobj = tempQR; // Only assign if successful
-    } catch (e) {
-      // qrcode.js throws strings, not Error objects
-      const errMsg = typeof e === "string" ? e : e.message || String(e);
-      if (errMsg.includes("overflow")) {
-        typeNumber++;
-      } else {
-        throw e;
+  for (const errorLevel of errorLevels) {
+    typeNumber = 4; // Reset type number for each error level
+    while (typeNumber <= 40 && !qrSuccess) {
+      try {
+        tempQR = qrcode(typeNumber, errorLevel);
+        tempQR.addData(text);
+        tempQR.make();
+        qrSuccess = true;
+        usedErrorLevel = errorLevel;
+        qrobj = tempQR; // Only assign if successful
+        break;
+      } catch (e) {
+        // qrcode.js throws strings, not Error objects
+        const errMsg = typeof e === "string" ? e : e.message || String(e);
+        if (errMsg.includes("overflow")) {
+          typeNumber++;
+        } else {
+          throw e;
+        }
       }
     }
+    if (qrSuccess) break; // Exit if we found a working combination
   }
 
   if (!qrSuccess) throw new Error("QR code data too large");
