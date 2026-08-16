@@ -330,13 +330,6 @@ async function maybeLoadAndApply(lang) {
 }
 
 // ---------- Theme ----------
-function updateThemeButton() {
-  const btn = document.getElementById("themeToggle");
-  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-  btn.innerHTML = isDark
-    ? "â˜€ï¸ " + t().theme_light
-    : "ðŸŒ™ " + t().theme_dark;
-}
 function setTheme(mode) {
   document.documentElement.setAttribute("data-theme", mode);
   localStorage.setItem("theme", mode);
@@ -567,22 +560,6 @@ function buildPayloadDraft() {
   return lines.join("\n").replace(/(\n)+$/, "");
 }
 
-function buildPayload(v) {
-  const hasStruct = !!v.rem_struct,
-    hasUnstruct = !!v.rem_unstruct;
-  if (hasStruct && hasUnstruct)
-    throw new Error(
-      LANG === "de"
-        ? "Bitte nur EINE Referenz verwenden: entweder â€žStrukturiertâ€œ ODER â€žVerwendungszweckâ€œ."
-        : "Use only ONE reference: either structured OR free text."
-    );
-  const lines = collectPayloadFields({
-    ...v,
-    amount: v.amount ? asEUR(v.amount) : "",
-  });
-  return lines.join("\n").replace(/(\n)+$/, "");
-}
-
 function ensureLimits(payload) {
   const bytes = byteLenUtf8(payload);
   if (bytes > 331) throw new Error(t().err_len(bytes));
@@ -643,22 +620,6 @@ function renderQR(text) {
 
   hasQR = true;
   setDownloadEnabled(true);
-}
-function clearQR() {
-  document.getElementById("qrcanvas").innerHTML = "";
-  document.getElementById("payload").textContent = "";
-  document.getElementById("bytes").textContent = "â€“";
-  document.getElementById("liveInfo").textContent = "â€“";
-  hasQR = false;
-  setDownloadEnabled(false);
-  closeSaveMenu();
-}
-function showPayload(payload, bytes) {
-  document.getElementById("payload").textContent = payload.replace(
-    /\n/g,
-    "âŽ\n"
-  );
-  document.getElementById("bytes").textContent = `${bytes} / 331`;
 }
 function setStatus(msg, ok = false, warn = false) {
   const s = document.getElementById("status");
