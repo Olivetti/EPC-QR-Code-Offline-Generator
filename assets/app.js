@@ -299,7 +299,6 @@ function applyLang(lang) {
   document.getElementById("f_buy").textContent = dict.footer_buy;
   document.getElementById("f_kofi").textContent = dict.footer_kofi;
   document.getElementById("f_gh").textContent = dict.footer_gh;
-  fixFooterSeparators();
 
   // Tooltips
   document.getElementById("qm_struct").title = dict.tooltip_struct;
@@ -367,101 +366,12 @@ function stripLocaleTitles() {
   }
 }
 
-// Footer separators and icons: "Support: â˜• Buy me a coffee Â· â¤ï¸ Ko-fi Â· ðŸŒ GitHub"
-function fixFooterSeparators_legacy() {
-  const supportEl = document.getElementById("f_support");
-  if (!supportEl) return;
-  const container = supportEl.parentElement; // the span wrapping the links
-  if (!container) return;
-
-  // Find anchors and their label spans
-  const buyA = container.querySelector('a[href*="buymeacoffee"]');
-  const kofiA = container.querySelector('a[href*="ko-fi"]');
-  const ghA = container.querySelector('a[href*="github.com"]');
-  const buyL = document.getElementById("f_buy");
-  const kofiL = document.getElementById("f_kofi");
-  const ghL = document.getElementById("f_gh");
-
-  // Clean any leading symbols in labels
-  const clean = (el) => {
-    if (el)
-      el.textContent = String(el.textContent || "").replace(
-        /^\s*[^A-Za-z0-9]+\s*/,
-        ""
-      );
-  };
-  clean(buyL);
-  clean(kofiL);
-  clean(ghL);
-
-  // Prepend icons INSIDE the labels (prevents gaps caused by link margins)
-  if (buyL) buyL.textContent = `â˜• ${buyL.textContent}`.trim();
-  if (kofiL) kofiL.textContent = `â¤ï¸ ${kofiL.textContent}`.trim();
-  if (ghL) ghL.textContent = `ðŸŒ ${ghL.textContent}`.trim();
-
-  // Remove existing plain text nodes (old separators)
-  Array.from(container.childNodes).forEach((n) => {
-    if (n.nodeType === 3) n.remove();
-  });
-
-  // Rebuild separators exactly once: Buy Â· Ko-fi Â· GitHub
-  if (buyA && kofiA)
-    container.insertBefore(document.createTextNode(" Â· "), kofiA);
-  if (kofiA && ghA)
-    container.insertBefore(document.createTextNode(" Â· "), ghA);
-}
-
 // --- Overrides to avoid encoding issues in UI texts ---
 function updateThemeButton() {
   const btn = document.getElementById("themeToggle");
   if (!btn) return;
   const isDark = document.documentElement.getAttribute("data-theme") === "dark";
   btn.textContent = isDark ? t().theme_light : t().theme_dark;
-}
-
-function fixFooterSeparators_legacy() {
-  const supportEl = document.getElementById("f_support");
-  if (!supportEl) return;
-  const container = supportEl.parentElement;
-  if (!container) return;
-  const buyA = container.querySelector('a[href*="buymeacoffee"]');
-  const kofiA = container.querySelector('a[href*="ko-fi"]');
-  const ghA = container.querySelector('a[href*="github.com"]');
-  const buyL = document.getElementById("f_buy");
-  const kofiL = document.getElementById("f_kofi");
-  const ghL = document.getElementById("f_gh");
-  const hasImgs = !!(
-    (buyL && buyL.querySelector("img")) ||
-    (kofiL && kofiL.querySelector("img")) ||
-    (ghL && ghL.querySelector("img"))
-  );
-  if (hasImgs) {
-    // Old/original look provided via HTML with brand images and separators; leave as-is
-    return;
-  }
-
-  // Prepend simple emoji icons if not already present
-  const ensureIcon = (el, icon) => {
-    if (!el) return;
-    // If an <img> already exists inside the label, keep it (original icon)
-    if (el.querySelector("img")) return;
-    // Fallback: prepend emoji icon
-    const txt = String(el.textContent || "");
-    const trimmed = txt.trimStart();
-    if (!trimmed.startsWith(icon)) el.textContent = `${icon} ${trimmed}`.trim();
-  };
-  ensureIcon(buyL, "â˜•");
-  ensureIcon(kofiL, "ðŸµ");
-  ensureIcon(ghL, "ðŸ™");
-
-  // Remove existing plain text nodes (old separators) and rebuild with a simple bullet
-  Array.from(container.childNodes).forEach((n) => {
-    if (n.nodeType === 3) n.remove();
-  });
-  if (buyA && kofiA)
-    container.insertBefore(document.createTextNode(" Â· "), kofiA);
-  if (kofiA && ghA)
-    container.insertBefore(document.createTextNode(" Â· "), ghA);
 }
 
 // ---------- Validation & helpers ----------
