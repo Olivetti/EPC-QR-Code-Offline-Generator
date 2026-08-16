@@ -693,36 +693,28 @@ function renderQR(text) {
   const box = document.getElementById("qrcanvas");
   box.innerHTML = "";
 
-  // Auto-detect optimal type number and error correction level
-  // Try M first (medium error correction), then fall back to L (low) if needed
-  const errorLevels = ["M", "L"];
-  let typeNumber = 4;
+  // EPC069-12 mandates error correction level M, so the level is fixed.
+  // Only the QR version is auto-detected: start small and grow until the
+  // payload fits. Never fall back to level L - that would produce a code
+  // outside the EPC standard, and a payment code has to stay readable even
+  // when printed small or partly smudged.
+  // ensureLimits() caps the payload at 331 bytes beforehand, which fits
+  // level M from version 13 on, so this loop always finds a version.
   let qrSuccess = false;
-  let tempQR = null;
-  let usedErrorLevel = "M";
 
-  for (const errorLevel of errorLevels) {
-    typeNumber = 4; // Reset type number for each error level
-    while (typeNumber <= 40 && !qrSuccess) {
-      try {
-        tempQR = qrcode(typeNumber, errorLevel);
-        tempQR.addData(text);
-        tempQR.make();
-        qrSuccess = true;
-        usedErrorLevel = errorLevel;
-        qrobj = tempQR; // Only assign if successful
-        break;
-      } catch (e) {
-        // qrcode.js throws strings, not Error objects
-        const errMsg = typeof e === "string" ? e : e.message || String(e);
-        if (errMsg.includes("overflow")) {
-          typeNumber++;
-        } else {
-          throw e;
-        }
-      }
+  for (let typeNumber = 4; typeNumber <= 40; typeNumber++) {
+    try {
+      const tempQR = qrcode(typeNumber, "M");
+      tempQR.addData(text);
+      tempQR.make();
+      qrobj = tempQR; // only assign once the code was built successfully
+      qrSuccess = true;
+      break;
+    } catch (e) {
+      // qrcode.js throws strings, not Error objects
+      const errMsg = typeof e === "string" ? e : e.message || String(e);
+      if (!errMsg.includes("overflow")) throw e;
     }
-    if (qrSuccess) break; // Exit if we found a working combination
   }
 
   if (!qrSuccess) throw new Error("QR code data too large");
