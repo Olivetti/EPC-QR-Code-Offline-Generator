@@ -14,7 +14,9 @@ Advanced section expanded:
 ![Advanced expanded](docs/screenshots/advanced-expanded.png)
 
 ## Features
-- Offline only: no network requests; all scripts are local
+- Offline only: no network requests; all scripts are local. A Content-Security-Policy
+  with `connect-src 'none'` makes the browser enforce this, so payment data cannot
+  be sent anywhere even if a script were injected
 - IBAN validation: live check and readable spacing
 - Fields: Recipient, IBAN, Amount (EUR), Payment reference OR Structured reference (RF, ISO 11649), Purpose code, BIC (rarely needed), Note to originator
 - EPC payload guard: live byte counter and limit check (max 331 bytes)
@@ -55,7 +57,7 @@ Note: The app works entirely offline. You can keep and use it without internet c
 ## Project Structure
 - `index.html`: UI, styles, and script loading
 - `assets/app.js`: App logic (validation, payload build, QR render, export, i18n handling)
-- `assets/qrcode.min.js`: QR library (local)
+- `assets/qrcode.js`: QR library (local)
 - `assets/i18n-core.js`: Base i18n (EN)
 - `assets/i18n/*.js`: Optional translations (DE, FR, IT, ...)
 - `LICENSE`: MIT license
@@ -84,7 +86,8 @@ If this tool helps you and you want to support it:
 MIT — see `LICENSE`.
 
 ## Credits
-- QR code library: qrcode.js (local copy in `assets/qrcode.min.js`)
+- QR code library: [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator)
+  by Kazuhiko Arase, MIT licensed (local copy in `assets/qrcode.js`)
 - Footer labels: Emoji glyphs (☕❤️🌐) from system fonts
 
 ## Notes on Release
