@@ -3,6 +3,29 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      The page never talks to a network. connect-src 'none' enforces that:
+      no fetch, XHR, WebSocket or beacon can leave the browser, so the IBAN
+      and amount you type cannot be sent anywhere, even if a script were
+      injected. 'unsafe-inline' is needed for style only (one <style> block
+      and a few style attributes); scripts are all external files.
+      blob: and data: cover the SVG-to-canvas conversion behind the PNG and
+      JPEG download.
+      frame-ancestors is deliberately absent: it is ignored in a meta tag
+      and would only produce a console warning. Clickjacking protection
+      needs a real response header, which GitHub Pages cannot set.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none';
+               script-src 'self';
+               style-src 'self' 'unsafe-inline';
+               img-src 'self' blob: data:;
+               connect-src 'none';
+               form-action 'none';
+               base-uri 'none'"
+    />
+    <meta name="referrer" content="no-referrer" />
     <title>EPC QR Code Offline Generator</title>
     <style>
       :root {

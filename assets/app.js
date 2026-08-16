@@ -1,4 +1,4 @@
-﻿/* app.js â€“ UX: live IBAN validation, smart amount formatting, asymmetric conflict highlight,
+/* app.js – UX: live IBAN validation, smart amount formatting, asymmetric conflict highlight,
    live byte counter, tooltips, dark mode toggle, save-as split, i18n, IBAN spacing, true SVG export */
 
 let LANG = "en";
@@ -56,35 +56,35 @@ function languageLabel(code) {
 const LANGUAGE_NAMES = {
   en: "English",
   de: "Deutsch",
-  fr: "FranÃ§ais",
+  fr: "Français",
   it: "Italiano",
-  es: "EspaÃ±ol",
+  es: "Español",
   nl: "Nederlands",
-  pt: "PortuguÃªs",
+  pt: "Português",
   sv: "Svenska",
   da: "Dansk",
   no: "Norsk",
   fi: "Suomi",
-  is: "Ãslenska",
-  cs: "ÄŒeÅ¡tina",
-  sk: "SlovenÄina",
+  is: "Íslenska",
+  cs: "Čeština",
+  sk: "Slovenčina",
   pl: "Polski",
   hu: "Magyar",
-  ro: "RomÃ¢nÄƒ",
-  bg: "Ð‘ÑŠÐ»Ð³Ð°Ñ€ÑÐºÐ¸",
+  ro: "Română",
+  bg: "Български",
   hr: "Hrvatski",
-  sl: "SlovenÅ¡Äina",
-  lt: "LietuviÅ³",
-  lv: "LatvieÅ¡u",
+  sl: "Slovenščina",
+  lt: "Lietuvių",
+  lv: "Latviešu",
   et: "Eesti",
-  el: "Î•Î»Î»Î·Î½Î¹ÎºÎ¬",
+  el: "Ελληνικά",
   ga: "Gaeilge",
-  lb: "LÃ«tzebuergesch",
+  lb: "Lëtzebuergesch",
   rm: "Rumantsch",
-  ca: "CatalÃ ",
-  tr: "TÃ¼rkÃ§e",
+  ca: "Català",
+  tr: "Türkçe",
   cy: "Cymraeg",
-  gd: "GÃ idhlig",
+  gd: "Gàidhlig",
   mt: "Malti",
 };
 
@@ -133,13 +133,13 @@ function ensureI18N() {
       totalBytes: "Total bytes:",
       qrInfo: "QR info:",
       details: "Show details (EPC payload)",
-      lf: "Line breaks are shown as âŽ.",
+      lf: "Line breaks are shown as ⏎.",
       placeholders: {
         name: "e.g., Example GmbH",
         iban: "DE89 3704 0044 0532 0130 00",
         amount: "12.34",
         unstruct: "Invoice 4711, Customer 123",
-        struct: "e.g., RF18â€¦",
+        struct: "e.g., RF18…",
         purpose: "e.g., GDDS",
         bic: "usually empty in EU",
         b2o: "optional",
@@ -155,11 +155,11 @@ function ensureI18N() {
         b2o: "",
       },
       status_ok: "QR code created. Scan with your banking app or save.",
-      status_prefill: "Example data filled. Click â€œGenerate QR codeâ€.",
+      status_prefill: "Example data filled. Click “Generate QR code”.",
       status_noqr: "No QR code yet.",
       err_name: "Recipient is required.",
       err_iban: "IBAN is invalid.",
-      err_purpose: "Purpose code must be 1â€“4 alphanumeric characters.",
+      err_purpose: "Purpose code must be 1–4 alphanumeric characters.",
       err_bic: "Invalid BIC format.",
       err_amount_min: "Invalid amount: at least 0.01 EUR.",
       err_len: (b) =>
@@ -168,9 +168,9 @@ function ensureI18N() {
         "QR library not loaded. Ensure assets/qrcode.js is loaded before app.js.",
       footer_offline: "This page works fully offline. Just open index.html.",
       footer_support: "Support:",
-      footer_buy: "â˜• Buy me a coffee",
-      footer_kofi: "â¤ï¸ Ko-fi",
-      footer_gh: "ðŸŒ GitHub",
+      footer_buy: "☕ Buy me a coffee",
+      footer_kofi: "❤️ Ko-fi",
+      footer_gh: "🌐 GitHub",
     };
   }
 }
@@ -299,7 +299,6 @@ function applyLang(lang) {
   document.getElementById("f_buy").textContent = dict.footer_buy;
   document.getElementById("f_kofi").textContent = dict.footer_kofi;
   document.getElementById("f_gh").textContent = dict.footer_gh;
-  fixFooterSeparators();
 
   // Tooltips
   document.getElementById("qm_struct").title = dict.tooltip_struct;
@@ -331,13 +330,6 @@ async function maybeLoadAndApply(lang) {
 }
 
 // ---------- Theme ----------
-function updateThemeButton() {
-  const btn = document.getElementById("themeToggle");
-  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-  btn.innerHTML = isDark
-    ? "â˜€ï¸ " + t().theme_light
-    : "ðŸŒ™ " + t().theme_dark;
-}
 function setTheme(mode) {
   document.documentElement.setAttribute("data-theme", mode);
   localStorage.setItem("theme", mode);
@@ -367,101 +359,12 @@ function stripLocaleTitles() {
   }
 }
 
-// Footer separators and icons: "Support: â˜• Buy me a coffee Â· â¤ï¸ Ko-fi Â· ðŸŒ GitHub"
-function fixFooterSeparators_legacy() {
-  const supportEl = document.getElementById("f_support");
-  if (!supportEl) return;
-  const container = supportEl.parentElement; // the span wrapping the links
-  if (!container) return;
-
-  // Find anchors and their label spans
-  const buyA = container.querySelector('a[href*="buymeacoffee"]');
-  const kofiA = container.querySelector('a[href*="ko-fi"]');
-  const ghA = container.querySelector('a[href*="github.com"]');
-  const buyL = document.getElementById("f_buy");
-  const kofiL = document.getElementById("f_kofi");
-  const ghL = document.getElementById("f_gh");
-
-  // Clean any leading symbols in labels
-  const clean = (el) => {
-    if (el)
-      el.textContent = String(el.textContent || "").replace(
-        /^\s*[^A-Za-z0-9]+\s*/,
-        ""
-      );
-  };
-  clean(buyL);
-  clean(kofiL);
-  clean(ghL);
-
-  // Prepend icons INSIDE the labels (prevents gaps caused by link margins)
-  if (buyL) buyL.textContent = `â˜• ${buyL.textContent}`.trim();
-  if (kofiL) kofiL.textContent = `â¤ï¸ ${kofiL.textContent}`.trim();
-  if (ghL) ghL.textContent = `ðŸŒ ${ghL.textContent}`.trim();
-
-  // Remove existing plain text nodes (old separators)
-  Array.from(container.childNodes).forEach((n) => {
-    if (n.nodeType === 3) n.remove();
-  });
-
-  // Rebuild separators exactly once: Buy Â· Ko-fi Â· GitHub
-  if (buyA && kofiA)
-    container.insertBefore(document.createTextNode(" Â· "), kofiA);
-  if (kofiA && ghA)
-    container.insertBefore(document.createTextNode(" Â· "), ghA);
-}
-
 // --- Overrides to avoid encoding issues in UI texts ---
 function updateThemeButton() {
   const btn = document.getElementById("themeToggle");
   if (!btn) return;
   const isDark = document.documentElement.getAttribute("data-theme") === "dark";
   btn.textContent = isDark ? t().theme_light : t().theme_dark;
-}
-
-function fixFooterSeparators_legacy() {
-  const supportEl = document.getElementById("f_support");
-  if (!supportEl) return;
-  const container = supportEl.parentElement;
-  if (!container) return;
-  const buyA = container.querySelector('a[href*="buymeacoffee"]');
-  const kofiA = container.querySelector('a[href*="ko-fi"]');
-  const ghA = container.querySelector('a[href*="github.com"]');
-  const buyL = document.getElementById("f_buy");
-  const kofiL = document.getElementById("f_kofi");
-  const ghL = document.getElementById("f_gh");
-  const hasImgs = !!(
-    (buyL && buyL.querySelector("img")) ||
-    (kofiL && kofiL.querySelector("img")) ||
-    (ghL && ghL.querySelector("img"))
-  );
-  if (hasImgs) {
-    // Old/original look provided via HTML with brand images and separators; leave as-is
-    return;
-  }
-
-  // Prepend simple emoji icons if not already present
-  const ensureIcon = (el, icon) => {
-    if (!el) return;
-    // If an <img> already exists inside the label, keep it (original icon)
-    if (el.querySelector("img")) return;
-    // Fallback: prepend emoji icon
-    const txt = String(el.textContent || "");
-    const trimmed = txt.trimStart();
-    if (!trimmed.startsWith(icon)) el.textContent = `${icon} ${trimmed}`.trim();
-  };
-  ensureIcon(buyL, "â˜•");
-  ensureIcon(kofiL, "ðŸµ");
-  ensureIcon(ghL, "ðŸ™");
-
-  // Remove existing plain text nodes (old separators) and rebuild with a simple bullet
-  Array.from(container.childNodes).forEach((n) => {
-    if (n.nodeType === 3) n.remove();
-  });
-  if (buyA && kofiA)
-    container.insertBefore(document.createTextNode(" Â· "), kofiA);
-  if (kofiA && ghA)
-    container.insertBefore(document.createTextNode(" Â· "), ghA);
 }
 
 // ---------- Validation & helpers ----------
@@ -505,7 +408,7 @@ function formatAmountLocalized(n, lang) {
 }
 function sanitizeAmountValue(value) {
   // allow digits, dot, comma; last separator becomes decimal, others removed
-  // Examples: "1.234,56" â†’ "1234.56", "1,234.56" â†’ "1234.56"
+  // Examples: "1.234,56" → "1234.56", "1,234.56" → "1234.56"
   let s = String(value || "")
     .replace(/\s+/g, "")
     .replace(/[^0-9.,]/g, "");
@@ -657,22 +560,6 @@ function buildPayloadDraft() {
   return lines.join("\n").replace(/(\n)+$/, "");
 }
 
-function buildPayload(v) {
-  const hasStruct = !!v.rem_struct,
-    hasUnstruct = !!v.rem_unstruct;
-  if (hasStruct && hasUnstruct)
-    throw new Error(
-      LANG === "de"
-        ? "Bitte nur EINE Referenz verwenden: entweder â€žStrukturiertâ€œ ODER â€žVerwendungszweckâ€œ."
-        : "Use only ONE reference: either structured OR free text."
-    );
-  const lines = collectPayloadFields({
-    ...v,
-    amount: v.amount ? asEUR(v.amount) : "",
-  });
-  return lines.join("\n").replace(/(\n)+$/, "");
-}
-
 function ensureLimits(payload) {
   const bytes = byteLenUtf8(payload);
   if (bytes > 331) throw new Error(t().err_len(bytes));
@@ -733,22 +620,6 @@ function renderQR(text) {
 
   hasQR = true;
   setDownloadEnabled(true);
-}
-function clearQR() {
-  document.getElementById("qrcanvas").innerHTML = "";
-  document.getElementById("payload").textContent = "";
-  document.getElementById("bytes").textContent = "â€“";
-  document.getElementById("liveInfo").textContent = "â€“";
-  hasQR = false;
-  setDownloadEnabled(false);
-  closeSaveMenu();
-}
-function showPayload(payload, bytes) {
-  document.getElementById("payload").textContent = payload.replace(
-    /\n/g,
-    "âŽ\n"
-  );
-  document.getElementById("bytes").textContent = `${bytes} / 331`;
 }
 function setStatus(msg, ok = false, warn = false) {
   const s = document.getElementById("status");
@@ -937,7 +808,7 @@ function updateLiveUI() {
   const conflict = !!unstructEl.value.trim() && !!structEl.value.trim();
   const liveInfo = document.getElementById("liveInfo");
 
-  // Erst zurÃ¼cksetzen
+  // Erst zurücksetzen
   unstructEl.classList.remove("is-invalid");
   structEl.classList.remove("is-invalid");
 
@@ -950,18 +821,18 @@ function updateLiveUI() {
     setStatus(dict.live_conflict, false, true);
   } else {
     liveInfo.textContent = dict.live_ok;
-    // Warn-Status zurÃ¼cknehmen, falls er nur vom Konflikt kam
+    // Warn-Status zurücknehmen, falls er nur vom Konflikt kam
     const s = document.getElementById("status");
     if (s.classList.contains("warn")) setStatus("");
   }
 
-  // --- Live-BytezÃ¤hler anhand Draft-Payload ---
+  // --- Live-Bytezähler anhand Draft-Payload ---
   try {
     const draft = buildPayloadDraft();
     const bytes = byteLenUtf8(draft);
     document.getElementById("bytes").textContent = `${bytes} / 331`;
   } catch {
-    document.getElementById("bytes").textContent = "â€“";
+    document.getElementById("bytes").textContent = "–";
   }
 }
 
@@ -1151,13 +1022,13 @@ document.getElementById("themeToggle").addEventListener("click", () => {
       structEl.setAttribute("pattern", "^RF[0-9]{2}[A-Z0-9]{1,21}$");
       structEl.setAttribute(
         "title",
-        "RF + 2 digits + 1â€“21 letters/digits (no spaces)"
+        "RF + 2 digits + 1–21 letters/digits (no spaces)"
       );
     }
     const saveCaret = document.getElementById("saveCaret");
     if (saveCaret) {
       saveCaret.setAttribute("aria-label", "Open save format menu");
-      saveCaret.textContent = "â–¼";
+      saveCaret.textContent = "▼";
     }
   } catch {}
   const ibanEl = document.getElementById("iban");
