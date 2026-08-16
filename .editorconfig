@@ -1,0 +1,24 @@
+# EditorConfig — https://editorconfig.org
+#
+# charset = utf-8 is the point of this file. In #10 a large part of
+# assets/app.js had to be repaired because it had once been saved as UTF-8
+# after being read as CP1252, which turned "Čeština" into "ÄŒeÅ¡tina" and
+# damaged eight of the language names. Pinning the charset stops an editor
+# from doing that again.
+#
+# The other rules just record what the files already look like, so no
+# reformatting is expected from adding this.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# Two trailing spaces are a hard line break in Markdown — do not strip them.
+[*.md]
+trim_trailing_whitespace = false
