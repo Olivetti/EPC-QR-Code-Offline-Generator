@@ -25,12 +25,19 @@ Advanced section expanded:
 - Multilingual: English base plus optional locales in `assets/i18n/`
 
 ## Quick Start
-1. Clone or download the repository.
+1. Download the ZIP from the [latest release](https://github.com/quasistatic-setup/EPC-QR-Code-Offline-Generator/releases/latest) and unpack it — or clone the repository.
 2. Open `index.html` in your browser (double-click is fine). Optionally serve it via a static file server.
 3. Fill in the required fields (Recipient, IBAN, optionally Amount) and click "Generate QR code".
 4. Use "Save as" to export the QR code as PNG/SVG/JPG.
 
 Note: The app works entirely offline. You can keep and use it without internet connectivity.
+
+## Releases
+- Each release ships a ZIP that unpacks into a ready-to-use folder; there is no build step and no install.
+- Version numbers are dates: `YYYY.MM.DD.N`, with `N` counting the releases published that day.
+- The footer of the app shows its own version, so you can tell an old offline copy from the [current release](https://github.com/quasistatic-setup/EPC-QR-Code-Offline-Generator/releases/latest).
+- Changes per version: [CHANGELOG.md](CHANGELOG.md).
+- The live demo always tracks `main`, which can be ahead of the latest release.
 
 ## Fields & Rules (Overview)
 - Recipient: free text (required)
@@ -60,6 +67,7 @@ Note: The app works entirely offline. You can keep and use it without internet c
 - `assets/qrcode.js`: QR library (local)
 - `assets/i18n-core.js`: Base i18n (EN)
 - `assets/i18n/*.js`: Optional translations (DE, FR, IT, ...)
+- `CHANGELOG.md`: what changed per version
 - `LICENSE`: MIT license
 
 ## Development
@@ -90,6 +98,6 @@ MIT — see `LICENSE`.
   by Kazuhiko Arase, MIT licensed (local copy in `assets/qrcode.js`)
 - Footer labels: Emoji glyphs (☕❤️🌐) from system fonts
 
-## Notes on Release
+## Notes
 - No Node or test tooling is required; this repo ships static assets only.
 - Language selector uses `Intl.DisplayNames` to list languages.
