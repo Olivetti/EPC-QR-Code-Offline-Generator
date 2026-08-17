@@ -1,6 +1,11 @@
 /* app.js – UX: live IBAN validation, smart amount formatting, asymmetric conflict highlight,
    live byte counter, tooltips, dark mode toggle, save-as split, i18n, IBAN spacing, true SVG export */
 
+// Released version, CalVer YYYY.MM.DD.N. This is the single source of truth:
+// the release workflow refuses to publish a tag that disagrees with it, and the
+// footer shows it so a downloaded offline copy can be matched to a release.
+const APP_VERSION = "2026.08.17.1";
+
 let LANG = "en";
 let hasQR = false;
 let lastChanged = null; // remembers which field was edited last (for conflict highlight)
@@ -978,9 +983,17 @@ document.getElementById("themeToggle").addEventListener("click", () => {
 });
 
 // ---------- Init ----------
+// The version is language independent, so it is written once at startup and
+// not touched by applyLang().
+function renderVersion() {
+  const el = document.getElementById("f_version");
+  if (el) el.textContent = "v" + APP_VERSION;
+}
+
 (function init() {
   ensureI18N();
   initTheme();
+  renderVersion();
   const pref = detectPreferredLang();
   populateLangSelect(pref);
   if (!window.I18N[pref] && OPTIONAL_LOCALES.includes(pref)) {
