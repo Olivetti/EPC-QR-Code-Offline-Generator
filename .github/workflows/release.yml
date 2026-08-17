@@ -1,0 +1,72 @@
+# Publishes a GitHub release whenever a version tag is pushed.
+#
+# The repository ships static files only, so the "build" is just packaging:
+# index.html, assets/ and the docs, in a folder that unpacks ready to use.
+# GitHub Pages is unaffected — it keeps serving main.
+#
+# Three things must agree before anything is published: the tag, APP_VERSION in
+# assets/app.js, and a section in CHANGELOG.md. A release that forgets one of
+# them fails here instead of shipping a copy that cannot be identified later.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check tag, code and changelog agree
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          echo "version=$version" >> "$GITHUB_ENV"
+
+          code_version="$(sed -n 's/^const APP_VERSION = "\(.*\)";$/\1/p' assets/app.js)"
+          if [ "$code_version" != "$version" ]; then
+            echo "::error::APP_VERSION in assets/app.js is '$code_version', tag says '$version'."
+            exit 1
+          fi
+
+          awk -v hdr="## [$version]" '
+            index($0, hdr) == 1 { inside = 1; next }
+            inside && /^## \[/  { exit }
+            inside              { print }
+          ' CHANGELOG.md > section.md
+
+          if [ ! -s section.md ] || ! grep -q '[^[:space:]]' section.md; then
+            echo "::error::CHANGELOG.md has no entries under '## [$version]'."
+            exit 1
+          fi
+
+      - name: Build the ZIP
+        run: |
+          set -euo pipefail
+          name="epc-qr-code-offline-generator-${version}"
+          mkdir -p "dist/$name"
+          cp -R index.html assets README.md LICENSE CHANGELOG.md "dist/$name/"
+          (cd dist && zip -qr "../${name}.zip" "$name")
+          echo "zip=${name}.zip" >> "$GITHUB_ENV"
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          {
+            echo "Download the ZIP below, unpack it and open \`index.html\`."
+            echo "No installation, no network — the page works offline."
+            echo
+            cat section.md
+          } > notes.md
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file notes.md \
+            "$zip"
